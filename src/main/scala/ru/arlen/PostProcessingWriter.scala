@@ -9,7 +9,6 @@ import org.apache.kafka.common.serialization.StringSerializer
 import ru.arlen.conf.Conf
 import ru.arlen.model.PostProcessingCommand
 
-import java.time.LocalDateTime
 import scala.util.{Failure, Try}
 
 class PostProcessingWriter[K, V](producer: KafkaProducer[K, V]) extends StrictLogging with AutoCloseable {
@@ -37,7 +36,7 @@ object Test extends App {
   val writer   = new PostProcessingWriter(producer)
   val record   = new ProducerRecord[String, Json](topic, cmd.asJson)
 
-  writer.send(record)
-  println(LocalDateTime.now())
+  println(cmd.asJson.noSpaces)
+//  (1 to 10).foreach(_ => writer.send(record))
 
 }
