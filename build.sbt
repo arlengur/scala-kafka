@@ -7,5 +7,5 @@ lazy val root = (project in file("."))
     organization := "ru.arlen",
     scalaVersion := "2.13.11",
     scalacOptions ++= scalaCompilerOptions,
-    libraryDependencies ++= circe ::: scalaTest ::: kafka ::: logback ::: pureConfig
+    libraryDependencies ++= circe ::: tests ::: kafka ::: pureConfig ::: zio ::: logs
   )

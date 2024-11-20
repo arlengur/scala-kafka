@@ -4,6 +4,7 @@ package ru.arlen
 import io.circe.syntax._
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
+import ru.arlen.postprocessing.JsonSerializer
 
 class JsonSerializerSpec extends AnyFreeSpec with Matchers {
   "Common json serializer" - {

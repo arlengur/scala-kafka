@@ -1,4 +1,4 @@
-package ru.arlen.model
+package ru.arlen.postprocessing.model
 
 import io.circe.Json
 

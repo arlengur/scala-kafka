@@ -1,4 +1,4 @@
-package ru.arlen
+package ru.arlen.postprocessing
 
 import com.typesafe.scalalogging.StrictLogging
 import io.circe.Json
@@ -6,10 +6,11 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import org.apache.kafka.clients.producer.{Callback, KafkaProducer, ProducerRecord, RecordMetadata}
 import org.apache.kafka.common.serialization.StringSerializer
-import ru.arlen.conf.Conf
-import ru.arlen.model.PostProcessingCommand
+import ru.arlen.config.Resources
+import ru.arlen.postprocessing.model.PostProcessingCommand
 
-import scala.util.{Failure, Try}
+import scala.jdk.CollectionConverters._
+import scala.util.{Failure, Success, Try}
 
 class PostProcessingWriter[K, V](producer: KafkaProducer[K, V]) extends StrictLogging with AutoCloseable {
   private final val loggingCallback: Callback = (meta: RecordMetadata, e: Exception) =>
@@ -21,15 +22,16 @@ class PostProcessingWriter[K, V](producer: KafkaProducer[K, V]) extends StrictLo
     Try(producer.send(record, loggingCallback)) match {
       case Failure(e) =>
         logger.error(s"Writer post_processing failed to write to topic ${record.topic()}", errorMessage, e.getMessage)
-      case _ =>
+      case Success(_) =>
+        producer.flush()
     }
 
   final def close(): Unit = producer.close()
 }
 
 object Test extends App {
-  val topic: String                        = Conf.PostProcessing.writerTopic
-  val props: java.util.Map[String, Object] = Conf.PostProcessing.kafkaProps
+  val topic: String                        = Resources.writerTopic
+  val props: java.util.Map[String, Object] = Resources.kafkaProps.asJava
 
   val cmd      = PostProcessingCommand("123", 0, "20", "234", "agent_info", Array(Json.fromInt(1)), None)
   val producer = new KafkaProducer[String, Json](props, new StringSerializer, new JsonSerializer)
@@ -37,6 +39,6 @@ object Test extends App {
   val record   = new ProducerRecord[String, Json](topic, cmd.asJson)
 
   println(cmd.asJson.noSpaces)
-//  (1 to 10).foreach(_ => writer.send(record))
+//  writer.send(record)
 
 }

@@ -1,4 +1,4 @@
-package ru.arlen
+package ru.arlen.postprocessing
 
 import io.circe.Json
 import io.circe.jackson.jacksonPrintByteBuffer
